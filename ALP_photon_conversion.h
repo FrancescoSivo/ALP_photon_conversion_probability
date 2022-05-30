@@ -123,6 +123,7 @@ mat_complex Mk(long double z , vec_real kdir, long double g, long double omega, 
     //@param: g (GeV^-1), the coupling constant of the ALP with the photon
     //@param: omega (MeV), the energy of the photon
     //@param: Deltaa (MeV^-1), the Delta_a related to the mass of the ALP
+	//@param: absif (bool), if true, the absorption is considered in the calculation
     //@return: Mk
     long double xi = obs[0] + z*kdir[0];
 	long double yi = obs[1] + z*kdir[1];
@@ -188,6 +189,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
 	//@param: omega (MeV), the energy of the ALP
 	//@param: Deltaa (MeV^-1), the Delta_a related to the mass of the ALP
 	//@param: mai (neV), the mass of the ALP incremented by 1 neV
+	//@param: absif (bool), if true, the absorption is considered in the calculation
 	//@return: Prob
 	ldir*=conv;
 	bdir*=conv;
@@ -252,7 +254,7 @@ long double Non_pert_Prob(long double ldir, long double bdir, long double distz,
 	//@param: distz (kpc), the initial distance between ALP and the observer
 	//@param: g (GeV^-1), the coupling constant of the ALP with the photon
 	//@param: omega (MeV), the energy of the ALP
-	//@param: ma (neV), the mass of the ALP incremented by 1 neV
+	//@param: ma (neV), the mass of the ALP
 	//@return: Prob
 	ldir*=conv;
 	bdir*=conv;
@@ -317,6 +319,7 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 	//@param: omega (MeV), the energy of the ALP
 	//@param: Deltaa (MeV^-1), the Delta_a related to the mass of the ALP
 	//@param: mai (neV), the mass of the ALP incremented by 1 neV
+	//@param: absif (bool), if true, the photon is absorbed by the ALP
 	//@return: Prob
 	ldir*=conv;
 	bdir*=conv;
