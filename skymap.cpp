@@ -30,12 +30,15 @@ int main(){
     //@return 0
     //TO DO: add more parameters choices
     //TO DO: Let it run
+
+	// Initialize the parameters
     long double basetime = 15.0, g, ma, mai, omega, d, Deltaa;
 	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif;
 	unsigned int multi, cpucount;
 	float input;
     string filename;
     FILE* file;
+	// Taking inputs from file
 	if((file=fopen("ic.txt","r"))==NULL)
 			cout<<"Error opening the file"<<endl;
 	fscanf(file, "%d", &single_multi);
@@ -117,6 +120,7 @@ int main(){
 		else
 			cout<<"Estimate time for the completion of the evaluation: "<<estimatime<<" min"<<endl;
 		cout<<"Please note that this time may vary depending on the machine on which this application is running."<<endl;
+		// Skymap calculation
 		auto ti=std::chrono::steady_clock::now();
 		printProgress(0.0);
 		#pragma omp parallel for num_threads(cpucount) schedule(dynamic)
@@ -127,6 +131,7 @@ int main(){
 				printProgress(float(i)/float(N1-1));
 		}
 		printProgress(1.0);
+		// end of skymap calculation
 		cout << "\n\n";
 		auto tf=std::chrono::steady_clock::now();
 		if (std::chrono::duration_cast <std::chrono::seconds>(tf-ti).count()>60.0)
@@ -196,7 +201,9 @@ int main(){
 		}
 		cout<<"Calculation in progress..." <<endl;
 		if(single_multi==1){
+			// Calculation of the probability one a single line
 			ProbSingleLine(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+			// End of the calculation of the probability one a single line
 			system("1D_plot.exe");
 		}
 		else{
@@ -220,6 +227,7 @@ int main(){
                     }
                 }
                 cpucount = multi;
+				// Calculation of the probability with respect to the mass
 				printProgress(0.0);
 				#pragma omp parallel for num_threads(cpucount) schedule(dynamic)
 				for(int i = 0; i<N1; i++){
@@ -231,6 +239,7 @@ int main(){
 						printProgress(float(i)/float(N1-1));
 				}
 				printProgress(1.0);
+				// End of the calculation of the probability with respect to the mass
 				cout << "\n";
 				if((file=fopen("1D_plot.txt","w+"))==NULL)
 					cout<<"Error opening the file"<<endl;
@@ -263,6 +272,7 @@ int main(){
                     }
                 }
                 cpucount = multi;
+				// Calculation of the probability with respect to the energy
 				printProgress(0.0);
 				#pragma omp parallel for num_threads(cpucount) schedule(dynamic)
 				for(int i = 0; i<N1; i++){
@@ -273,6 +283,7 @@ int main(){
 						printProgress(float(i)/float(N1-1));
 				}
 				printProgress(1.0);
+				// End of the calculation of the probability with respect to the energy
 				cout<<"\n";
 				if((file=fopen("1D_plot.txt","w+"))==NULL)
 					cout<<"Error opening the file"<<endl;
@@ -305,6 +316,7 @@ int main(){
                     }
                 }
 		        cpucount = multi;
+				// Calculation of the probability with respect to the g
 				printProgress(0.0);
                 #pragma omp parallel for num_threads(cpucount) schedule(dynamic)
 				for(int i = 0; i<N1; i++){
@@ -315,6 +327,7 @@ int main(){
 						printProgress(float(i)/float(N1-1));
 				}
 				printProgress(1.0);
+				// End of the calculation of the probability with respect to the g
 				cout << "\n";
 				if((file=fopen("1D_plot.txt","w+"))==NULL)
 					cout<<"Error opening the file"<<endl;
@@ -332,8 +345,10 @@ int main(){
 			}
 			else if(single_multi==5){
 				gauleg(-1.0,1.0);
+				// Calculation of the probability with non perturbative theory
 				double pb = (double)Non_pert_Prob(lx,bx,d, g, omega, ma);
 				cout<<pb<<endl;
+				// End of the calculation of the probability with non perturbative theory
 				int Digs = 16;
 				if((file=fopen("1D_plot.txt","w+"))==NULL)
 					cout<<"Error opening the file"<<endl;
