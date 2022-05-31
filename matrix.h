@@ -462,6 +462,90 @@ mat_complex mult_mat_scalar(long double scalar, mat_complex mat){
     }
     return mult;
 }
+//function that returns the product of two real matrices
+mat_real mult_mat_mat(mat_real mat1, mat_real mat2){
+    //! returns the product of two real matrices
+    //@param mat1: a real matrix
+    //@param mat2: a real matrix
+    //@return: the product of the two matrices
+    int n = mat1.size();
+    int m = mat2[0].size();
+    int p = mat2.size();
+    mat_real mult(n);
+    for(int i = 0; i < n; i++){
+        mult[i].resize(m);
+        for(int j = 0; j < m; j++){
+            mult[i][j] = 0;
+            for(int k = 0; k < p; k++){
+                mult[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+    return mult;
+}
+//function that returns the product of two complex matrices
+mat_complex mult_mat_mat(mat_complex mat1, mat_complex mat2){
+    //! returns the product of two complex matrices
+    //@param mat1: a complex matrix
+    //@param mat2: a complex matrix
+    //@return: the product of the two matrices
+    int n = mat1.size();
+    int m = mat2[0].size();
+    int p = mat2.size();
+    mat_complex mult(n);
+    for(int i = 0; i < n; i++){
+        mult[i].resize(m);
+        for(int j = 0; j < m; j++){
+            mult[i][j] = 0;
+            for(int k = 0; k < p; k++){
+                mult[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+    return mult;
+}
+//function that returns the product of a real matrix and a complex matrix
+mat_complex mult_mat_mat(mat_real mat1, mat_complex mat2){
+    //! returns the product of a real matrix and a complex matrix
+    //@param mat1: a real matrix
+    //@param mat2: a complex matrix
+    //@return: the product of the two matrices
+    int n = mat1.size();
+    int m = mat2[0].size();
+    int p = mat2.size();
+    mat_complex mult(n);
+    for(int i = 0; i < n; i++){
+        mult[i].resize(m);
+        for(int j = 0; j < m; j++){
+            mult[i][j] = 0;
+            for(int k = 0; k < p; k++){
+                mult[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+    return mult;
+}
+//function that returns the product of a complex matrix and a real matrix
+mat_complex mult_mat_mat(mat_complex mat1, mat_real mat2){
+    //! returns the product of a complex matrix and a real matrix
+    //@param mat1: a complex matrix
+    //@param mat2: a real matrix
+    //@return: the product of the two matrices
+    int n = mat1.size();
+    int m = mat2[0].size();
+    int p = mat2.size();
+    mat_complex mult(n);
+    for(int i = 0; i < n; i++){
+        mult[i].resize(m);
+        for(int j = 0; j < m; j++){
+            mult[i][j] = 0;
+            for(int k = 0; k < p; k++){
+                mult[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+    return mult;
+}
 //function that returns the matrix composed by e absolute values of the elements of a complex matrix
 mat_real matrix_abs(mat_complex mat){
     //! returns the matrix composed by e absolute values of the elements of a complex matrix
@@ -536,16 +620,7 @@ mat_real commutator(mat_real mat1, mat_real mat2){
     //@param mat1: a real matrix
     //@param mat2: a real matrix
     //@return: the commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_real comm(n);
-    for(int i = 0; i < n; i++){
-        comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            comm[i][j] = mat1[i][j] * mat2[i][j] - mat1[i][j] * mat2[j][i];
-        }
-    }
-    return comm;
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the commutator of two complex matrices
 mat_complex commutator(mat_complex mat1, mat_complex mat2){
@@ -553,16 +628,7 @@ mat_complex commutator(mat_complex mat1, mat_complex mat2){
     //@param mat1: a complex matrix
     //@param mat2: a complex matrix
     //@return: the commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_complex comm(n);
-    for(int i = 0; i < n; i++){
-        comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            comm[i][j] = mat1[i][j] * mat2[i][j] - mat1[i][j] * mat2[j][i];
-        }
-    }
-    return comm;
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the commutator of a real matrix and a complex matrix
 mat_complex commutator(mat_real mat1, mat_complex mat2){
@@ -570,16 +636,7 @@ mat_complex commutator(mat_real mat1, mat_complex mat2){
     //@param mat1: a real matrix
     //@param mat2: a complex matrix
     //@return: the commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_complex comm(n);
-    for(int i = 0; i < n; i++){
-        comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            comm[i][j] = mat1[i][j] * mat2[i][j] - mat1[i][j] * mat2[j][i];
-        }
-    }
-    return comm;
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the commutator of a complex matrix and a real matrix
 mat_complex commutator(mat_complex mat1, mat_real mat2){
@@ -587,50 +644,23 @@ mat_complex commutator(mat_complex mat1, mat_real mat2){
     //@param mat1: a complex matrix
     //@param mat2: a real matrix
     //@return: the commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_complex comm(n);
-    for(int i = 0; i < n; i++){
-        comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            comm[i][j] = mat1[i][j] * mat2[i][j] - mat1[i][j] * mat2[j][i];
-        }
-    }
-    return comm;
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
-//function that returns the anti-commutator of two real matrices
+//function that returns the anti-commutator of 2 real matrices
 mat_real anti_commutator(mat_real mat1, mat_real mat2){
-    //! returns the anti-commutator of two real matrices
+    //! returns the anti-commutator of 2 real matrices
     //@param mat1: a real matrix
     //@param mat2: a real matrix
     //@return: the anti-commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_real anti_comm(n);
-    for(int i = 0; i < n; i++){
-        anti_comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            anti_comm[i][j] = mat1[i][j] * mat2[i][j] + mat1[i][j] * mat2[j][i];
-        }
-    }
-    return anti_comm;
+    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
-//function that returns the anti-commutator of two complex matrices
+//function that returns the anti-commutator of 2 complex matrices
 mat_complex anti_commutator(mat_complex mat1, mat_complex mat2){
-    //! returns the anti-commutator of two complex matrices
+    //! returns the anti-commutator of 2 complex matrices
     //@param mat1: a complex matrix
     //@param mat2: a complex matrix
     //@return: the anti-commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_complex anti_comm(n);
-    for(int i = 0; i < n; i++){
-        anti_comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            anti_comm[i][j] = mat1[i][j] * mat2[i][j] + mat1[i][j] * mat2[j][i];
-        }
-    }
-    return anti_comm;
+    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the anti-commutator of a real matrix and a complex matrix
 mat_complex anti_commutator(mat_real mat1, mat_complex mat2){
@@ -638,16 +668,7 @@ mat_complex anti_commutator(mat_real mat1, mat_complex mat2){
     //@param mat1: a real matrix
     //@param mat2: a complex matrix
     //@return: the anti-commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_complex anti_comm(n);
-    for(int i = 0; i < n; i++){
-        anti_comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            anti_comm[i][j] = mat1[i][j] * mat2[i][j] + mat1[i][j] * mat2[j][i];
-        }
-    }
-    return anti_comm;
+    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the anti-commutator of a complex matrix and a real matrix
 mat_complex anti_commutator(mat_complex mat1, mat_real mat2){
@@ -655,16 +676,7 @@ mat_complex anti_commutator(mat_complex mat1, mat_real mat2){
     //@param mat1: a complex matrix
     //@param mat2: a real matrix
     //@return: the anti-commutator of the two matrices
-    int n = mat1.size();
-    int m = mat1[0].size();
-    mat_complex anti_comm(n);
-    for(int i = 0; i < n; i++){
-        anti_comm[i].resize(m);
-        for(int j = 0; j < m; j++){
-            anti_comm[i][j] = mat1[i][j] * mat2[i][j] + mat1[i][j] * mat2[j][i];
-        }
-    }
-    return anti_comm;
+    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the maximum value of a real matrix
 long double max_value(mat_real mat){

@@ -44,6 +44,7 @@ vec_real obs = {-8.5,0.0,0.0};								//< ----   Observer coordinates ({-8.5,0.0
 long double conv=PI/180.0;									//< ----   Degree to radian conversion factor
 int N=0;	    											//< ----   Average number of iterations per kpc for runge-kutta
 long double BPRINT = 0.0;
+complex<long double> I(0.0,1.0);
 
 //Runge Kutta coefficients
 //coefficients of order 5
@@ -417,7 +418,7 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
                         ak = sum_mat(ak , mult_mat_scalar(k_RK[k],AA_RK8[j][k]));
                 }
                 rhoidzak = sum_mat(rho,mult_mat_scalar(ak,dz));
-                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),(0.0,-dz));  //!TO DO: check the warning
+                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);  //!TO DO: check the warning
 				}
             for(int j=0; j<order; j++){
                 rho = sum_mat(rho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
