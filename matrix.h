@@ -21,21 +21,24 @@ void print_vec(vec_real &v){
     //! print a real vector
     //@param v: the vector to be printed
     //@return none
+    cout<<"[";
     for(unsigned int i=0; i<v.size(); i++){
-        cout << v[i] << " ";
+        cout << v[i] << " , ";
     }
-    cout << endl;
+    cout << "]" << endl;
 }
 //function to print a real matrix
 void print_mat(mat_real &m){
     //! print a real matrix
     //@param m: the matrix to be printed
     //@return none
+    cout<<"|";
     for(unsigned int i=0; i<m.size(); i++){
         for(unsigned int j=0; j<m[i].size(); j++){
-            cout << m[i][j] << " ";
+            cout << m[i][j] << " | ";
         }
         cout << endl;
+        cout << "|";
     }
 }
 //function to print a complex vector
@@ -43,21 +46,24 @@ void print_vec(vec_complex &v){
     //! print a complex vector
     //@param v: the vector to be printed
     //@return none
+    cout<<"[";
     for(unsigned int i=0; i<v.size(); i++){
-        cout << v[i] << " ";
+        cout << v[i] << " , ";
     }
-    cout << endl;
+    cout << "]" << endl;
 }
 //function to print a complex matrix
 void print_mat(mat_complex &m){
     //! print a complex matrix
     //@param m: the matrix to be printed
     //@return none
+    cout<<"|";
     for(unsigned int i=0; i<m.size(); i++){
         for(unsigned int j=0; j<m[i].size(); j++){
-            cout << m[i][j] << " ";
+            cout << m[i][j] << " | ";
         }
         cout << endl;
+        cout << "|";
     }
 }
 //function that initializes a real matrix of size n x m initialized with 0
@@ -70,7 +76,7 @@ mat_real init_mat_real(int n, int m){
     for(int i = 0; i < n; i++){
         mat[i].resize(m);
         for(int j = 0; j < m; j++){
-            mat[i][j] = 0;
+            mat[i][j] = 0.0;
         }
     }
     return mat;
@@ -85,7 +91,7 @@ mat_complex init_mat_complex(int n, int m){
     for(int i = 0; i < n; i++){
         mat[i].resize(m);
         for(int j = 0; j < m; j++){
-            mat[i][j] = 0;
+            mat[i][j] = 0.0;
         }
     }
     return mat;
@@ -198,14 +204,12 @@ mat_real sum_mat(mat_real mat1, mat_real mat2){
     //@return: the result of the sum of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_real sum(n);
     for(int i = 0; i < n; i++){
-        sum[i].resize(m);
         for(int j = 0; j < m; j++){
-            sum[i][j] = mat1[i][j] + mat2[i][j];
+            mat1[i][j] = mat1[i][j] + mat2[i][j];
         }
     }
-    return sum;
+    return mat1;
 }
 //function that sum a complex matrix with a complex matrix and returns the result
 mat_complex sum_mat(mat_complex mat1, mat_complex mat2){
@@ -215,14 +219,12 @@ mat_complex sum_mat(mat_complex mat1, mat_complex mat2){
     //@return: the result of the sum of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_complex sum(n);
     for(int i = 0; i < n; i++){
-        sum[i].resize(m);
         for(int j = 0; j < m; j++){
-            sum[i][j] = mat1[i][j] + mat2[i][j];
+            mat1[i][j] = mat1[i][j] + mat2[i][j];
         }
     }
-    return sum;
+    return mat1;
 }
 //function that sum a real matrix with a complex matrix and returns the result
 mat_complex sum_mat(mat_real mat1, mat_complex mat2){
@@ -232,14 +234,12 @@ mat_complex sum_mat(mat_real mat1, mat_complex mat2){
     //@return: the result of the sum of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_complex sum(n);
     for(int i = 0; i < n; i++){
-        sum[i].resize(m);
         for(int j = 0; j < m; j++){
-            sum[i][j] = mat1[i][j] + mat2[i][j];
+            mat2[i][j] = mat1[i][j] + mat2[i][j];
         }
     }
-    return sum;
+    return mat2;
 }
 //function that sum a complex matrix with a real matrix and returns the result
 mat_complex sum_mat(mat_complex mat1, mat_real mat2){
@@ -249,14 +249,12 @@ mat_complex sum_mat(mat_complex mat1, mat_real mat2){
     //@return: the result of the sum of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_complex sum(n);
     for(int i = 0; i < n; i++){
-        sum[i].resize(m);
         for(int j = 0; j < m; j++){
-            sum[i][j] = mat1[i][j] + mat2[i][j];
+            mat1[i][j] = mat1[i][j] + mat2[i][j];
         }
     }
-    return sum;
+    return mat1;
 }
 //function that subtracts a real matrix with a real matrix and returns the result
 mat_real sub_mat(mat_real mat1, mat_real mat2){
@@ -266,14 +264,12 @@ mat_real sub_mat(mat_real mat1, mat_real mat2){
     //@return: the result of the subtraction of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_real sub(n);
     for(int i = 0; i < n; i++){
-        sub[i].resize(m);
         for(int j = 0; j < m; j++){
-            sub[i][j] = mat1[i][j] - mat2[i][j];
+            mat1[i][j] = mat1[i][j] - mat2[i][j];
         }
     }
-    return sub;
+    return mat1;
 }
 //function that subtracts a complex matrix with a complex matrix and returns the result
 mat_complex sub_mat(mat_complex mat1, mat_complex mat2){
@@ -283,14 +279,12 @@ mat_complex sub_mat(mat_complex mat1, mat_complex mat2){
     //@return: the result of the subtraction of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_complex sub(n);
     for(int i = 0; i < n; i++){
-        sub[i].resize(m);
         for(int j = 0; j < m; j++){
-            sub[i][j] = mat1[i][j] - mat2[i][j];
+            mat1[i][j] = mat1[i][j] - mat2[i][j];
         }
     }
-    return sub;
+    return mat1;
 }
 //function that subtracts a real matrix with a complex matrix and returns the result
 mat_complex sub_mat(mat_real mat1, mat_complex mat2){
@@ -300,14 +294,12 @@ mat_complex sub_mat(mat_real mat1, mat_complex mat2){
     //@return: the result of the subtraction of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_complex sub(n);
     for(int i = 0; i < n; i++){
-        sub[i].resize(m);
         for(int j = 0; j < m; j++){
-            sub[i][j] = mat1[i][j] - mat2[i][j];
+            mat2[i][j] = mat1[i][j] - mat2[i][j];
         }
     }
-    return sub;
+    return mat2;
 }
 //function that subtracts a complex matrix with a real matrix and returns the result
 mat_complex sub_mat(mat_complex mat1, mat_real mat2){
@@ -317,14 +309,12 @@ mat_complex sub_mat(mat_complex mat1, mat_real mat2){
     //@return: the result of the subtraction of the two matrices
     int n = mat1.size();
     int m = mat1[0].size();
-    mat_complex sub(n);
     for(int i = 0; i < n; i++){
-        sub[i].resize(m);
         for(int j = 0; j < m; j++){
-            sub[i][j] = mat1[i][j] - mat2[i][j];
+            mat1[i][j] = mat1[i][j] - mat2[i][j];
         }
     }
-    return sub;
+    return mat1;
 }
 //function that multiplies a real matrix with a real scalar and returns the result
 mat_real mult_mat_scalar(mat_real mat, long double scalar){
@@ -334,14 +324,12 @@ mat_real mult_mat_scalar(mat_real mat, long double scalar){
     //@return: the result of the multiplication of the matrix with the scalar
     int n = mat.size();
     int m = mat[0].size();
-    mat_real mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = mat[i][j] * scalar;
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a complex matrix with a real scalar and returns the result
 mat_complex mult_mat_scalar(mat_complex mat, long double scalar){
@@ -351,14 +339,12 @@ mat_complex mult_mat_scalar(mat_complex mat, long double scalar){
     //@return: the result of the multiplication of the matrix with the scalar
     int n = mat.size();
     int m = mat[0].size();
-    mat_complex mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = mat[i][j] * scalar;
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a real matrix with a complex scalar and returns the result
 mat_complex mult_mat_scalar(mat_real mat, complex<long double> scalar){
@@ -368,14 +354,12 @@ mat_complex mult_mat_scalar(mat_real mat, complex<long double> scalar){
     //@return: the result of the multiplication of the matrix with the scalar
     int n = mat.size();
     int m = mat[0].size();
-    mat_complex mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = mat[i][j] * scalar;
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a complex matrix with a complex scalar and returns the result
 mat_complex mult_mat_scalar(mat_complex mat, complex<long double> scalar){
@@ -385,14 +369,12 @@ mat_complex mult_mat_scalar(mat_complex mat, complex<long double> scalar){
     //@return: the result of the multiplication of the matrix with the scalar
     int n = mat.size();
     int m = mat[0].size();
-    mat_complex mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = mat[i][j] * scalar;
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a real scalar with a real matrix and returns the result
 mat_real mult_mat_scalar(long double scalar, mat_real mat){
@@ -402,14 +384,12 @@ mat_real mult_mat_scalar(long double scalar, mat_real mat){
     //@return: the result of the multiplication of the scalar with the matrix
     int n = mat.size();
     int m = mat[0].size();
-    mat_real mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = scalar * mat[i][j];
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a complex scalar with a complex matrix and returns the result
 mat_complex mult_mat_scalar(complex<long double> scalar, mat_complex mat){
@@ -419,14 +399,12 @@ mat_complex mult_mat_scalar(complex<long double> scalar, mat_complex mat){
     //@return: the result of the multiplication of the scalar with the matrix
     int n = mat.size();
     int m = mat[0].size();
-    mat_complex mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = scalar * mat[i][j];
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a real matrix with a complex scalar and returns the result
 mat_complex mult_mat_scalar(complex<long double> scalar, mat_real mat){
@@ -436,14 +414,12 @@ mat_complex mult_mat_scalar(complex<long double> scalar, mat_real mat){
     //@return: the result of the multiplication of the scalar with the matrix
     int n = mat.size();
     int m = mat[0].size();
-    mat_complex mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = mat[i][j] * scalar;
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that multiplies a complex matrix with a real scalar and returns the result
 mat_complex mult_mat_scalar(long double scalar, mat_complex mat){
@@ -453,14 +429,12 @@ mat_complex mult_mat_scalar(long double scalar, mat_complex mat){
     //@return: the result of the multiplication of the scalar with the matrix
     int n = mat.size();
     int m = mat[0].size();
-    mat_complex mult(n);
     for(int i = 0; i < n; i++){
-        mult[i].resize(m);
         for(int j = 0; j < m; j++){
-            mult[i][j] = mat[i][j] * scalar;
+            mat[i][j] *= scalar;
         }
     }
-    return mult;
+    return mat;
 }
 //function that returns the product of two real matrices
 mat_real mult_mat_mat(mat_real mat1, mat_real mat2){
@@ -553,14 +527,12 @@ mat_real matrix_abs(mat_complex mat){
     //@return: the matrix composed by e absolute values of the elements of the matrix
     int n = mat.size();
     int m = mat[0].size();
-    mat_real abs_mat(n);
     for(int i = 0; i < n; i++){
-        abs_mat[i].resize(m);
         for(int j = 0; j < m; j++){
-            abs_mat[i][j] = abs(mat[i][j]);
+            mat[i][j] = abs(mat[i][j]);
         }
     }
-    return abs_mat;
+    return mat;
 }
 //function that returns the sum of two real vectors
 vec_real sum_vect(vec_real vect1, vec_real vect2){
@@ -569,11 +541,10 @@ vec_real sum_vect(vec_real vect1, vec_real vect2){
     //@param vect2: a real vector
     //@return: the sum of the two vectors
     int n = vect1.size();
-    vec_real sum(n);
     for(int i = 0; i < n; i++){
-        sum[i] = vect1[i] + vect2[i];
+        vect1[i] = vect1[i] + vect2[i];
     }
-    return sum;
+    return vect1;
 }
 //function that returns the sum of two complex vectors
 vec_complex sum_vect(vec_complex vect1, vec_complex vect2){
@@ -582,11 +553,10 @@ vec_complex sum_vect(vec_complex vect1, vec_complex vect2){
     //@param vect2: a complex vector
     //@return: the sum of the two vectors
     int n = vect1.size();
-    vec_complex sum(n);
     for(int i = 0; i < n; i++){
-        sum[i] = vect1[i] + vect2[i];
+        vect1[i] = vect1[i] + vect2[i];
     }
-    return sum;
+    return vect1;
 }
 //function that returns the sum of a real vector and a complex vector
 vec_complex sum_vect(vec_real vect1, vec_complex vect2){
@@ -595,11 +565,10 @@ vec_complex sum_vect(vec_real vect1, vec_complex vect2){
     //@param vect2: a complex vector
     //@return: the sum of the two vectors
     int n = vect1.size();
-    vec_complex sum(n);
     for(int i = 0; i < n; i++){
-        sum[i] = vect1[i] + vect2[i];
+        vect2[i] = vect1[i] + vect2[i];
     }
-    return sum;
+    return vect2;
 }
 //function that returns the sum of a complex vector and a real vector
 vec_complex sum_vect(vec_complex vect1, vec_real vect2){
@@ -608,11 +577,10 @@ vec_complex sum_vect(vec_complex vect1, vec_real vect2){
     //@param vect2: a real vector
     //@return: the sum of the two vectors
     int n = vect1.size();
-    vec_complex sum(n);
     for(int i = 0; i < n; i++){
-        sum[i] = vect1[i] + vect2[i];
+        vect1[i] = vect1[i] + vect2[i];
     }
-    return sum;
+    return vect1;
 }
 //function that returns the commutator of two real matrices
 mat_real commutator(mat_real mat1, mat_real mat2){
@@ -652,7 +620,7 @@ mat_real anti_commutator(mat_real mat1, mat_real mat2){
     //@param mat1: a real matrix
     //@param mat2: a real matrix
     //@return: the anti-commutator of the two matrices
-    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the anti-commutator of 2 complex matrices
 mat_complex anti_commutator(mat_complex mat1, mat_complex mat2){
@@ -660,7 +628,7 @@ mat_complex anti_commutator(mat_complex mat1, mat_complex mat2){
     //@param mat1: a complex matrix
     //@param mat2: a complex matrix
     //@return: the anti-commutator of the two matrices
-    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the anti-commutator of a real matrix and a complex matrix
 mat_complex anti_commutator(mat_real mat1, mat_complex mat2){
@@ -668,7 +636,7 @@ mat_complex anti_commutator(mat_real mat1, mat_complex mat2){
     //@param mat1: a real matrix
     //@param mat2: a complex matrix
     //@return: the anti-commutator of the two matrices
-    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the anti-commutator of a complex matrix and a real matrix
 mat_complex anti_commutator(mat_complex mat1, mat_real mat2){
@@ -676,14 +644,14 @@ mat_complex anti_commutator(mat_complex mat1, mat_real mat2){
     //@param mat1: a complex matrix
     //@param mat2: a real matrix
     //@return: the anti-commutator of the two matrices
-    return sum_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
+    return sub_mat(mult_mat_mat(mat1, mat2),mult_mat_mat(mat2, mat1));
 }
 //function that returns the maximum value of a real matrix
 long double max_value(mat_real mat){
     //! returns the maximum value of a real matrix
     //@param mat: a real matrix
     //@return: the maximum value of the matrix
-    double max = mat[0][0];
+    long double max = mat[0][0];
     for(unsigned int i = 0; i < mat.size(); i++){
         for(unsigned int j = 0; j < mat[0].size(); j++){
             if(mat[i][j] > max){
@@ -698,7 +666,7 @@ long double min_value(mat_real mat){
     //! returns the minimum value of a real matrix
     //@param mat: a real matrix
     //@return: the minimum value of the matrix
-    double min = mat[0][0];
+    long double min = mat[0][0];
     for(unsigned int i = 0; i < mat.size(); i++){
         for(unsigned int j = 0; j < mat[0].size(); j++){
             if(mat[i][j] < min){
