@@ -50,53 +50,6 @@ int BRINGMUL = 0;
 int OMEGAIF = 0;
 int ABSIF = 0;
 int BCOMPARISON = 0;
-int N_GAULEG = 500;
-vector<long double> XGAUSS(N_GAULEG), WGAUSS(N_GAULEG);
-void gauleg(long double x1, long double x2){
-    //! This function calculates the Gauss-Legendre quadrature points and weights
-    //! for the integration.
-    //@param x1: lower integration limit
-    //@param x2: upper integration limit
-    //@return: none
-    //TO DO: let the user choose the number of points
-	long double epsilon_gauleg = 3.0*pow(10.0,-14.0);
-	for(int i = 0; i < (N_GAULEG)/2; i++){
-		XGAUSS[i] = 0.0;
-		WGAUSS[i] = 0.0;
-	}
-	int mm = (N_GAULEG + 1)/2;
-	long double xm = 0.5*(x2 + x1);
-	long double xl = 0.5*(x2 - x1);
-	long double z, p1, p2, p3, pp, z1;
-	vector<long double> xx(N_GAULEG+1), ww(N_GAULEG+1);
-	for(int i = 0; i < mm; i++){
-		z = cos(PI*((i+1)*1.0-0.25)/(N_GAULEG*1.0+0.5));
-		z1 = z + 1.0;
-		while((abs(z-z1)>epsilon_gauleg)){
-			p1 = 1.0;
-			p2 = 0.0;
-			for(int j = 1; j < N_GAULEG+1; j++){
-				p3 = p2;
-				p2 = p1;
-				p1 = ((2.0*j - 1.0)*z*p2 - (j-1.0)*p3)/j;
-			}
-			pp = N_GAULEG*(z*p1 - p2)/(pow(z,2.0)-1.0);
-			z1 = z;
-			z = z1 - p1/pp;
-		}
-		xx[i] = xm - xl*z;
-		xx[N_GAULEG - 1 - i] = xm + xl*z;
-		ww[i] = 2.0*xl/((1.0 - pow(z,2.0))*pow(pp,2.0));
-		ww[N_GAULEG - 1 - i] = ww[i];
-
-	}
-	for(int i = 0; i < (N_GAULEG)/2+1; i++){
-		XGAUSS[N_GAULEG - 2*i] = xx[i - 1];
-		XGAUSS[N_GAULEG - 2*(i - 1) - 1] = xx[N_GAULEG - i];
-		WGAUSS[N_GAULEG - 2*i] = ww[i - 1];
-		WGAUSS[N_GAULEG - 2*(i - 1) - 1] = ww[N_GAULEG - i];
-	}
-}
 
 long double selec(int i, long double r, long double phi){
     //! This function select the correct spiral arm for the calculation of the magnetic field
