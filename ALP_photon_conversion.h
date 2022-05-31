@@ -38,11 +38,11 @@ mat_complex ALPs_density_matrix_condition(mat_complex mat){
 }
 
 //Global variables
-long double Gammaabs;										//< ----   Initial inputs (coupling, axion mass, skymap distance, energy) + other stuff
+long double Gammaabs=0.0;									//< ----   Initial inputs (coupling, axion mass, skymap distance, energy) + other stuff
 long double c=1.56*pow(10,17);								//< ----   Multiplicative constant of the model
 vec_real obs = {-8.5,0.0,0.0};								//< ----   Observer coordinates ({-8.5,0.0,0.0} for the Earth)
 long double conv=PI/180.0;									//< ----   Degree to radian conversion factor
-int N;		    											//< ----   Average number of iterations per kpc for runge-kutta
+int N=0;	    											//< ----   Average number of iterations per kpc for runge-kutta
 long double BPRINT = 0.0;
 
 //Runge Kutta coefficients
