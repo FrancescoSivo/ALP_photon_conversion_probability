@@ -676,5 +676,18 @@ long double min_value(mat_real mat){
     }
     return min;
 }
+//function that returns the complex conjugate of a complex matrix
+mat_complex conjugate(mat_complex mat){
+    //! returns the complex conjugate of a complex matrix
+    //@param mat: a complex matrix
+    //@return: the complex conjugate of the matrix
+    for(unsigned int i = 0; i < mat.size(); i++){
+        for(unsigned int j = 0; j < mat[0].size(); j++){
+            mat[i][j] = conj(mat[i][j]);
+        }
+    }
+    return mat;
+}
+
 #endif /* MATRIX_H */
 //end of matrix.h
