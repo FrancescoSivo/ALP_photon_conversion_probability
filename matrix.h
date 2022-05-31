@@ -354,12 +354,14 @@ mat_complex mult_mat_scalar(mat_real mat, complex<long double> scalar){
     //@return: the result of the multiplication of the matrix with the scalar
     int n = mat.size();
     int m = mat[0].size();
+    mat_complex mat_complex(n);
     for(int i = 0; i < n; i++){
+        mat_complex[i].resize(m);
         for(int j = 0; j < m; j++){
-            mat[i][j] *= scalar;
+            mat_complex[i][j] = mat[i][j]*scalar;
         }
     }
-    return mat;
+    return mat_complex;
 }
 //function that multiplies a complex matrix with a complex scalar and returns the result
 mat_complex mult_mat_scalar(mat_complex mat, complex<long double> scalar){
@@ -414,12 +416,14 @@ mat_complex mult_mat_scalar(complex<long double> scalar, mat_real mat){
     //@return: the result of the multiplication of the scalar with the matrix
     int n = mat.size();
     int m = mat[0].size();
+    mat_complex mat_prod(n);
     for(int i = 0; i < n; i++){
+        mat_prod[i].resize(m);
         for(int j = 0; j < m; j++){
-            mat[i][j] *= scalar;
+            mat_prod[i][j] = mat[i][j]*scalar;
         }
     }
-    return mat;
+    return mat_prod;
 }
 //function that multiplies a complex matrix with a real scalar and returns the result
 mat_complex mult_mat_scalar(long double scalar, mat_complex mat){
@@ -527,12 +531,14 @@ mat_real matrix_abs(mat_complex mat){
     //@return: the matrix composed by e absolute values of the elements of the matrix
     int n = mat.size();
     int m = mat[0].size();
+    mat_real abs_mat(n);
     for(int i = 0; i < n; i++){
+        abs_mat[i].resize(m);
         for(int j = 0; j < m; j++){
-            mat[i][j] = abs(mat[i][j]);
+            abs_mat[i][j] = abs(mat[i][j]);
         }
     }
-    return mat;
+    return abs_mat;
 }
 //function that returns the sum of two real vectors
 vec_real sum_vect(vec_real vect1, vec_real vect2){
