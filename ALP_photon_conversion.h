@@ -14,14 +14,11 @@ mat_complex ALPs_initial_conditions(){
     for(int i = 0; i < 3; i++){
         mat[i].resize(3);
         for(int j = 0; j < 3; j++){
-            if(i == 2 && j == 2){
-                mat[i][j] = complex<long double>(1.0, 0.0);
-            }
-            else{
                 mat[i][j] = complex<long double>(0.0, 0.0);
             }
         }
     }
+	mat[2][2] = complex<long double>(1.0, 0.0);
     return mat;
 }
 //function that impose the required conditions on the density matrix
@@ -38,20 +35,20 @@ mat_complex ALPs_density_matrix_condition(mat_complex mat){
 }
 
 //Global variables
-long double Gammaabs=0.0;									//< ----   Initial inputs (coupling, axion mass, skymap distance, energy) + other stuff
-long double c=1.56*pow(10,17);								//< ----   Multiplicative constant of the model
+long double Gammaabs = 0.0;									//< ----   Initial inputs (coupling, axion mass, skymap distance, energy) + other stuff
+long double c = 1.56*pow(10,17);							//< ----   Multiplicative constant of the model
 vec_real obs = {-8.5,0.0,0.0};								//< ----   Observer coordinates ({-8.5,0.0,0.0} for the Earth)
-long double conv=PI/180.0;									//< ----   Degree to radian conversion factor
-int N=0;	    											//< ----   Average number of iterations per kpc for runge-kutta
+long double conv = PI/180.0;								//< ----   Degree to radian conversion factor
+int N = 0;	    											//< ----   Average number of iterations per kpc for runge-kutta
 long double BPRINT = 0.0;
 complex<long double> I(0.0,1.0);
 
 //Runge Kutta coefficients
 //coefficients of order 5
-long double AA_RK8[8][7]={{0.0,0.0,0.0,0.0,0.0,0.0,0.0},{1.0/6.0,0.0,0.0,0.0,0.0,0.0,0.0},{4.0/75.0,16.0/75.0,0.0,0.0,0.0,0.0,0.0},{5.0/6.0,-8.0/3.0,5.0/2.0,0.0,0.0,0.0,0.0},{-8.0/5.0,144.0/25.0,-4.0,16.0/25.0,0.0,0.0,0.0},{361.0/320.0,-18.0/5.0,407.0/128.0,-11.0/80.0,55.0/128.0,0.0,0.0},{-11.0/640.0,0.0,11.0/256.0,-11.0/160.0,11.0/256.0,0.0,0.0},{93.0/640.0,-18.0/5.0,803.0/256.0,-11.0/160.0,99.0/256.0,0.0,1.0}};
-vec_real BB_RK8={31.0/384.0,0.0,1125.0/2816.0,9.0/32.0,125.0/768.0,5.0/66.0,0.0,0.0};
-vec_real BBSTAR_RK8={7.0/1408.0,0.0,1125.0/2816.0,9.0/32.0,125.0/768.0,0.0,5.0/66.0,5.0/66.0};
-vec_real CC_RK8={0.0,1.0/6.0,4.0/15.0,2.0/3.0,4.0/5.0,1.0,0.0,1.0};
+long double AA_RK8[8][7] = {{0.0,0.0,0.0,0.0,0.0,0.0,0.0},{1.0/6.0,0.0,0.0,0.0,0.0,0.0,0.0},{4.0/75.0,16.0/75.0,0.0,0.0,0.0,0.0,0.0},{5.0/6.0,-8.0/3.0,5.0/2.0,0.0,0.0,0.0,0.0},{-8.0/5.0,144.0/25.0,-4.0,16.0/25.0,0.0,0.0,0.0},{361.0/320.0,-18.0/5.0,407.0/128.0,-11.0/80.0,55.0/128.0,0.0,0.0},{-11.0/640.0,0.0,11.0/256.0,-11.0/160.0,11.0/256.0,0.0,0.0},{93.0/640.0,-18.0/5.0,803.0/256.0,-11.0/160.0,99.0/256.0,0.0,1.0}};
+vec_real BB_RK8 = {31.0/384.0,0.0,1125.0/2816.0,9.0/32.0,125.0/768.0,5.0/66.0,0.0,0.0};
+vec_real BBSTAR_RK8 = {7.0/1408.0,0.0,1125.0/2816.0,9.0/32.0,125.0/768.0,0.0,5.0/66.0,5.0/66.0};
+vec_real CC_RK8 = {0.0,1.0/6.0,4.0/15.0,2.0/3.0,4.0/5.0,1.0,0.0,1.0};
 int order = 8;
 int errororder = order - 4;
 int N_GAULEG = 500;
@@ -278,7 +275,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
                         ak = sum_mat(ak , mult_mat_scalar(k_RK[k],AA_RK8[j][k]));
                 }
                 rhoidzak = sum_mat(rho,mult_mat_scalar(ak,dz));
-                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),(0.0,-dz));  //!TO DO: check the warning
+                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);  //!TO DO: check the warning
 				}
             for(int j=0; j<order; j++){
                 rho = sum_mat(rho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
@@ -286,7 +283,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
             }
 			rho = ALPs_density_matrix_condition(rho);
 			Erho = ALPs_density_matrix_condition(Erho);
-			Delta0=fmax(max_value(matrix_abs(sub_mat(rho,Erho))),0.0);
+			Delta0 = fmax(max_value(matrix_abs(sub_mat(rho,Erho))),0.0);
 			zi+=dz;
 			if (Delta0<Delta18)
 				dz = dz0*1.8;
