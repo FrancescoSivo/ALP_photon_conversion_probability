@@ -106,7 +106,6 @@ void gauleg(long double x1, long double x2){
 	}
 }
 
-
 //Function definitions of physical objects
 //Definitions for the absorption
 const int N_dngamma = 1000000;

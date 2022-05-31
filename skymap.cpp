@@ -29,8 +29,6 @@ int main(){
     //! Main function
     //@return 0
     //TO DO: add more parameters choices
-    //TO DO: Let it run
-
 	// Initialize the parameters
     long double basetime = 15.0, g, ma, mai, omega, d, Deltaa;
 	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif;
