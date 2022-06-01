@@ -18,7 +18,7 @@ const long double SIFAC = sin(IFAC);
 const long double CIFAC = cos(IFAC);
 const long double BB = tan((PI/2)-IFAC);
 const long double BRING = 0.1;
-const vector<long double> BCOMP = {0.1, 2.0, -0.9, 2.0, -3.0, -3.5, 0.0, 1.92};
+const vector<long double> BCOMP = {0.1, 2.0, -0.9, 2.0, -3.0, -3.5, 0.0, 1.92}; //!DIFFERENZA CON GAMMAALPS [0.1, 3., -0.9, -0.8, -2.0, -4.2, 0., np.nan]
 const vector<long double> RX = {5.1, 6.3, 7.1, 8.3, 9.8, 11.4, 12.7, 15.5};
 const int LENRX = RX.size();
 const long double HDISK = 0.4;
@@ -169,7 +169,6 @@ vector<long double> JF12(long double x, long double y, long double z){
 	vector<long double> btot = {0.0,0.0,0.0};
 	long double thetax = 0.0;
 	long double Bpol = 0.0;
-	//Calcolo di phi
 	if(x<0)
 		phi = PI + atan (y/x);
 	else if(y<0.0){

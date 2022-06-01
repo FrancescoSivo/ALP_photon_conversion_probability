@@ -15,7 +15,6 @@ mat_complex ALPs_initial_conditions(){
         mat[i].resize(3);
         for(int j = 0; j < 3; j++){
                 mat[i][j] = complex<long double>(0.0, 0.0);
-            }
         }
     }
 	mat[2][2] = complex<long double>(1.0, 0.0);
@@ -263,10 +262,11 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
 		dz = dz0;
 		Delta1 = pow(abs(dz0),errororder);    //Estimated desired error as a function of the order of the RK method and the base average step
 		Delta18 = Delta1/8.0;
-		while (zi>0){				//I solve the Von Neuman commutator equation with Runge-Kutta method
+		while (zi>0){				//I solve the Von Neuman commutator equation with Runge-Kutta method of order: order
 			//initialize all k_RK with init_mat_complex
-            for (int j=0; j<8; j++){
-                k_RK[j] = init_mat_complex(3,3);
+            k_RK[0] = init_mat_complex(3,3);
+            for (int j=1; j<order; j++){
+                k_RK[j] = k_RK[0];
             }
 			for(int j=0; j<order;j++){
 				Mkzi = Mk(zi + CC_RK8[j]*dz, kdir, g, omega, Deltaa, absif);
@@ -275,7 +275,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
                         ak = sum_mat(ak , mult_mat_scalar(k_RK[k],AA_RK8[j][k]));
                 }
                 rhoidzak = sum_mat(rho,mult_mat_scalar(ak,dz));
-                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);  //!TO DO: check the warning
+                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);
 				}
             for(int j=0; j<order; j++){
                 rho = sum_mat(rho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
@@ -404,8 +404,9 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 		Delta18 = Delta1/8.0;
 		while (zi>0){				//I solve the Von Neuman commutator equation with Runge-Kutta method
 			//initialize all k_RK with init_mat_complex
-            for (int j=0; j<8; j++){
-                k_RK[j] = init_mat_complex(3,3);
+			k_RK[0] = init_mat_complex(3,3);
+            for (int j=1; j<order; j++){
+                k_RK[j] = k_RK[0];
             }
 			for(int j=0; j<order;j++){
 				Mkzi = Mk(zi + CC_RK8[j]*dz, kdir, g, omega, Deltaa, absif);
@@ -414,7 +415,7 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
                         ak = sum_mat(ak , mult_mat_scalar(k_RK[k],AA_RK8[j][k]));
                 }
                 rhoidzak = sum_mat(rho,mult_mat_scalar(ak,dz));
-                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);  //!TO DO: check the warning
+                k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);
 				}
             for(int j=0; j<order; j++){
                 rho = sum_mat(rho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
