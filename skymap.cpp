@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <omp.h>
 #include <stdio.h>
+#include <cstring>
 #include "ALP_photon_conversion.h"
 #include "B_field.h"
 #include "matrix.h"
@@ -79,12 +80,18 @@ int main(){
 		fscanf(file, "%f", &input);
 		float maxprob =  input;
 		fscanf(file, "%d", &maxprobscale);
-		fscanf(file, "%s", filename);
+		//scan from file the string filename
+		fscanf(file, "%s", filename.c_str());
 		fclose(file);
 		if(type == 11)
 			customBfielevaluator(filename);
 		if(ABSIF){
-			gauleg(-1.0,1.0);
+			if(gauleg(-1.0,1.0))
+				cout<<"Gauss-Legendre quadrature points and weights evaluated correctly"<<endl;
+			else{
+				cout<<"Error producing Gauss-Legendre quadrature points and weights"<<endl;
+				return 0;
+			}
 			dngamma_dE_evaluator();
 			Gammaabs_value(omega);
 		}
@@ -193,7 +200,12 @@ int main(){
 		fscanf(file, "%d", &BCOMPARISON);
 		fclose(file);
 		if(ABSIF){
-			gauleg(-1.0,1.0);
+			if(gauleg(-1.0,1.0))
+				cout<<"Gauss-Legendre quadrature points and weights evaluated correctly and they are saved in the file gauss.txt"<<endl;
+			else{
+				cout<<"Error producing Gauss-Legendre quadrature points and weights"<<endl;
+				return 0;
+			}
 			dngamma_dE_evaluator();
 			Gammaabs_value(omega);
 		}
@@ -201,8 +213,11 @@ int main(){
 		if(single_multi==1){
 			// Calculation of the probability one a single line
 			ProbSingleLine(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+			cout<<"Calculation completed!"<<endl;
+			cout<<"Producing the plot..."<<endl;
 			// End of the calculation of the probability one a single line
 			system("1D_plot.exe");
+			cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 		}
 		else{
 			int N1 = 1000;
@@ -250,8 +265,10 @@ int main(){
 					fprintf(file,"%.*e    %.*e\n", Digs ,  x_component, Digs ,  probability);
 				}
 				fclose(file);
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				cout<<"Calculation completed!"<<endl;
+				cout<<"Producing the plot..."<<endl;
 				system("1D_plot.exe");
+				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 			}
 			else if(single_multi==3){
 				long double omegai = 1*pow(10,3*(energymeasure-2));
@@ -294,8 +311,10 @@ int main(){
 					fprintf(file,"%.*e    %.*e\n", Digs ,  x_component, Digs ,  probability);
 				}
 				fclose(file);
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				cout<<"Calculation completed!"<<endl;
+				cout<<"Producing the plot..."<<endl;
 				system("1D_plot.exe");
+				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 			}
 			else if(single_multi==4){
 				long double gai = g/10.0;
@@ -338,8 +357,10 @@ int main(){
 					fprintf(file,"%.*e    %.*e\n", Digs ,  x_component, Digs ,  probability);
 				}
 				fclose(file);
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				cout<<"Calculation completed!"<<endl;
+				cout<<"Producing the plot..."<<endl;
 				system("1D_plot.exe");
+				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 			}
 			else if(single_multi==5){
 				gauleg(-1.0,1.0);
@@ -352,7 +373,7 @@ int main(){
 					cout<<"Error opening the file"<<endl;
 				fprintf(file,"%.*e\n", Digs ,  pb);
 				fclose(file);
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				cout<<"The numerical result is saved in: 1D_plot.txt"<<endl;
 			}
             else{
                 cout<<"Wrong input"<<endl;

@@ -3,8 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <algorithm>
 #include "B_field.h"
 #include "matrix.h"
+
+using namespace std;
 
 //function that initializes a complex matrix with all elements equal to 0.0 + 0.0i but the [2][2] element equal to 1.0 + 0.0i
 mat_complex ALPs_initial_conditions(){
@@ -34,7 +37,7 @@ mat_complex ALPs_density_matrix_condition(mat_complex mat){
 }
 
 //Global variables
-long double Gammaabs = 0.0;									//< ----   Initial inputs (coupling, axion mass, skymap distance, energy) + other stuff
+complex<long double> Gammaabs(0.0,0.0);						//< ----   Initial inputs (coupling, axion mass, skymap distance, energy) + other stuff
 long double c = 1.56*pow(10,17);							//< ----   Multiplicative constant of the model
 vec_real obs = {-8.5,0.0,0.0};								//< ----   Observer coordinates ({-8.5,0.0,0.0} for the Earth)
 long double conv = PI/180.0;								//< ----   Degree to radian conversion factor
@@ -50,9 +53,9 @@ vec_real BBSTAR_RK8 = {7.0/1408.0,0.0,1125.0/2816.0,9.0/32.0,125.0/768.0,0.0,5.0
 vec_real CC_RK8 = {0.0,1.0/6.0,4.0/15.0,2.0/3.0,4.0/5.0,1.0,0.0,1.0};
 int order = 8;
 int errororder = order - 4;
-int N_GAULEG = 500;
+int N_GAULEG = 100;
 vector<long double> XGAUSS(N_GAULEG), WGAUSS(N_GAULEG);
-void gauleg(long double x1, long double x2){
+bool gauleg(long double x1, long double x2){
     //! This function calculates the Gauss-Legendre quadrature points and weights
     //! for the integration. It does not return anything, but it sets the global
 	//! variables XGAUSS and WGAUSS which are respectively the quadrature points
@@ -64,7 +67,7 @@ void gauleg(long double x1, long double x2){
     //@return: none
     //TO DO: let the user choose the number of points
 	long double epsilon_gauleg = 3.0*pow(10.0,-14.0);
-	for(int i = 0; i < (N_GAULEG)/2; i++){
+	for(int i = 0; i < N_GAULEG; i++){
 		XGAUSS[i] = 0.0;
 		WGAUSS[i] = 0.0;
 	}
@@ -72,7 +75,9 @@ void gauleg(long double x1, long double x2){
 	long double xm = 0.5*(x2 + x1);
 	long double xl = 0.5*(x2 - x1);
 	long double z, p1, p2, p3, pp, z1;
-	vector<long double> xx(N_GAULEG+1), ww(N_GAULEG+1);
+	vector<long double> xx, ww;
+	xx.resize(N_GAULEG+1);
+	ww.resize(N_GAULEG+1);
 	for(int i = 0; i < mm; i++){
 		z = cos(PI*((i+1)*1.0-0.25)/(N_GAULEG*1.0+0.5));
 		z1 = z + 1.0;
@@ -100,6 +105,20 @@ void gauleg(long double x1, long double x2){
 		WGAUSS[N_GAULEG - 2*i] = ww[i - 1];
 		WGAUSS[N_GAULEG - 2*(i - 1) - 1] = ww[N_GAULEG - i];
 	}
+	//print all XGAUSS and WGAUSS
+	/*for(int i = 0; i < N_GAULEG; i++){
+		cout << "XGAUSS[" << i << "] = " << XGAUSS[i] << endl;
+		cout << "WGAUSS[" << i << "] = " << WGAUSS[i] << endl;
+	}*/
+	//print all XGAUSS and WGAUSS on a file with 4 digits after the decimal point
+	FILE *fgauss; 
+	fgauss = fopen("gauss.txt","w");
+	fprintf(fgauss,"      XGAUSS          WGAUSS\n");
+	for(int i = 0; i < N_GAULEG; i++){
+
+		fprintf(fgauss,"%d : %.*e     %.*e\n",i, 4 , double(XGAUSS[i]), 4, double(WGAUSS[i]));
+	}
+	return true;
 }
 
 //Function definitions of physical objects
@@ -138,6 +157,7 @@ void Gammaabs_value(long double omega){
     //! calculate the value of Gammaabs
     //@param: omega (MeV), energy of the ALP
     //@return: none
+	//TO DO: check the value of the result
 	long double diff1,somm1,diff2,somm2, xmax1, xmin1, xmax2, xmin2, res = 0.0, res_i = 0.0, eps_i, eps_j, beta_j, sigma_gg;
 	long double beta_j2;
 	xmin1 = pow(m_e,2.0)/omega;
@@ -161,7 +181,8 @@ void Gammaabs_value(long double omega){
 		res_i *= diff2;
 		res += res_i*dngamma_dE(eps_i)*WGAUSS[i];
 	}
-	Gammaabs = -res*diff1*0.5;
+	Gammaabs = -res*diff1*0.5*I;
+	//cout << "Gammaabs = " << Gammaabs << endl;
 }
 
 mat_complex Mk(long double z , vec_real kdir, long double g, long double omega, long double Deltaa, bool absif){ 	
