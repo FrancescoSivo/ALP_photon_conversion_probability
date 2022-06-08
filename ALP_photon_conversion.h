@@ -53,9 +53,9 @@ vec_real BBSTAR_RK8 = {7.0/1408.0,0.0,1125.0/2816.0,9.0/32.0,125.0/768.0,0.0,5.0
 vec_real CC_RK8 = {0.0,1.0/6.0,4.0/15.0,2.0/3.0,4.0/5.0,1.0,0.0,1.0};
 int order = 8;
 int errororder = order - 4;
-int N_GAULEG = 100;
-vector<long double> XGAUSS(N_GAULEG), WGAUSS(N_GAULEG);
-bool gauleg(long double x1, long double x2){
+int N_GAULEG0 = 100;
+vector<long double> XGAUSS(N_GAULEG0), WGAUSS(N_GAULEG0);
+bool gauleg(long double x1, long double x2, int N_GAULEG){
     //! This function calculates the Gauss-Legendre quadrature points and weights
     //! for the integration. It does not return anything, but it sets the global
 	//! variables XGAUSS and WGAUSS which are respectively the quadrature points
@@ -67,6 +67,11 @@ bool gauleg(long double x1, long double x2){
     //@return: none
     //TO DO: let the user choose the number of points
 	long double epsilon_gauleg = 3.0*pow(10.0,-14.0);
+	//resize the vectors with N_GAULEG elements
+	if(N_GAULEG0 != N_GAULEG){
+		XGAUSS.resize(N_GAULEG);
+		WGAUSS.resize(N_GAULEG);
+	}
 	for(int i = 0; i < N_GAULEG; i++){
 		XGAUSS[i] = 0.0;
 		WGAUSS[i] = 0.0;
@@ -99,10 +104,16 @@ bool gauleg(long double x1, long double x2){
 		ww[N_GAULEG - 1 - i] = ww[i];
 
 	}
-	for(int i = 0; i < (N_GAULEG)/2+1; i++){
-		XGAUSS[N_GAULEG - 2*i] = xx[i - 1];
+	//print all xx and ww
+	/*for(int i = 0; i < N_GAULEG; i++){
+		cout << "xx[" << i << "] = " << xx[i] << endl;
+		cout << "ww[" << i << "] = " << ww[i] << endl;
+	}*/
+
+	for(int i = 0; i < (N_GAULEG)/2; i++){
+		XGAUSS[N_GAULEG - 2*i] = xx[i];
 		XGAUSS[N_GAULEG - 2*(i - 1) - 1] = xx[N_GAULEG - i];
-		WGAUSS[N_GAULEG - 2*i] = ww[i - 1];
+		WGAUSS[N_GAULEG - 2*i] = ww[i];
 		WGAUSS[N_GAULEG - 2*(i - 1) - 1] = ww[N_GAULEG - i];
 	}
 	//print all XGAUSS and WGAUSS
@@ -112,12 +123,13 @@ bool gauleg(long double x1, long double x2){
 	}*/
 	//print all XGAUSS and WGAUSS on a file with 4 digits after the decimal point
 	FILE *fgauss; 
-	fgauss = fopen("gauss.txt","w");
+	fgauss = fopen("gauss.txt","w+");
 	fprintf(fgauss,"      XGAUSS          WGAUSS\n");
 	for(int i = 0; i < N_GAULEG; i++){
 
 		fprintf(fgauss,"%d : %.*e     %.*e\n",i, 4 , double(XGAUSS[i]), 4, double(WGAUSS[i]));
 	}
+	fclose(fgauss);
 	return true;
 }
 
@@ -153,7 +165,7 @@ long double dngamma_dE(long double e){
 		return dngamma_dE_tab[i][1] + (dngamma_dE_tab[i+1][1]-dngamma_dE_tab[i][1])/(DeltaE_interpol)*(e - dngamma_dE_tab[i][0]);
 	}
 }
-void Gammaabs_value(long double omega){
+void Gammaabs_value(long double omega, int N_GAULEG){
     //! calculate the value of Gammaabs
     //@param: omega (MeV), energy of the ALP
     //@return: none
@@ -317,7 +329,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
 	return p;
 }
 
-long double Non_pert_Prob(long double ldir, long double bdir, long double distz, long double g, long double omega, long double ma){
+long double Non_pert_Prob(long double ldir, long double bdir, long double distz, long double g, long double omega, long double ma, int N_GAULEG){
 	//! calculate the probability ALP photon conversion with a non-perturbative calculation
 	//@param: ldir (deg), the l direction of the ALP from the observer
 	//@param: bdir (deg), the b direction of the ALP from the observer

@@ -32,7 +32,7 @@ int main(){
     //TO DO: add more parameters choices
 	// Initialize the parameters
     long double basetime = 15.0, g, ma, mai, omega, d, Deltaa;
-	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif;
+	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg;
 	unsigned int multi, cpucount;
 	float input;
     string filename;
@@ -80,20 +80,22 @@ int main(){
 		fscanf(file, "%f", &input);
 		float maxprob =  input;
 		fscanf(file, "%d", &maxprobscale);
+		fscanf(file, "%d", &cpucount);
+		fscanf(file, "%d", &N_gauleg);
 		//scan from file the string filename
 		fscanf(file, "%s", filename.c_str());
 		fclose(file);
 		if(type == 11)
 			customBfielevaluator(filename);
 		if(ABSIF){
-			if(gauleg(-1.0,1.0))
+			if(gauleg(-1.0,1.0,N_gauleg))
 				cout<<"Gauss-Legendre quadrature points and weights evaluated correctly"<<endl;
 			else{
 				cout<<"Error producing Gauss-Legendre quadrature points and weights"<<endl;
 				return 0;
 			}
 			dngamma_dE_evaluator();
-			Gammaabs_value(omega);
+			Gammaabs_value(omega, N_gauleg);
 		}
 		if(multi){
 			#pragma omp parallel shared(cpucount)
@@ -198,16 +200,17 @@ int main(){
 		fscanf(file, "%d", &ABSIF);
 		Deltaa=-c*0.5*pow(10,-15)*pow(ma,2.0)/omega;
 		fscanf(file, "%d", &BCOMPARISON);
+		fscanf(file, "%d", &N_gauleg);
 		fclose(file);
 		if(ABSIF){
-			if(gauleg(-1.0,1.0))
+			if(gauleg(-1.0,1.0,N_gauleg))
 				cout<<"Gauss-Legendre quadrature points and weights evaluated correctly and they are saved in the file gauss.txt"<<endl;
 			else{
 				cout<<"Error producing Gauss-Legendre quadrature points and weights"<<endl;
 				return 0;
 			}
 			dngamma_dE_evaluator();
-			Gammaabs_value(omega);
+			Gammaabs_value(omega, N_gauleg);
 		}
 		cout<<"Calculation in progress..." <<endl;
 		if(single_multi==1){
@@ -363,9 +366,9 @@ int main(){
 				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 			}
 			else if(single_multi==5){
-				gauleg(-1.0,1.0);
+				gauleg(-1.0,1.0,N_gauleg);
 				// Calculation of the probability with non perturbative theory
-				double pb = (double)Non_pert_Prob(lx,bx,d, g, omega, ma);
+				double pb = (double)Non_pert_Prob(lx,bx,d, g, omega, ma, N_gauleg);
 				cout<<pb<<endl;
 				// End of the calculation of the probability with non perturbative theory
 				int Digs = 16;
