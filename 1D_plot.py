@@ -35,6 +35,7 @@ def progress_bar(progress, total):
 #Inporting the data from the file and elaboring them
 tab = readMatrix("1D_plot.txt")
 M = 0.0
+m = 1.0
 MB = 0.0
 ty = float(tab[0][0])
 tb = 0
@@ -58,6 +59,8 @@ for i in range(1,N):
             MB = float(tab[i][2])
     if float(tab[i][1]) >= M:
         M = float(tab[i][1])
+    if float(tab[i][1]) <= m:
+        m = float(tab[i][1])
     progress_bar(i, N-1)
 print("\n")
 
@@ -123,6 +126,11 @@ if n==2:
             plt.xlabel("E (PeV)", fontdict=font)
     elif ty==4:
         plt.xlabel("g$_{a\gamma}$ (GeV$^{-1}$)", fontdict=font)
+    if ty!=1:
+        plt.xscale('log')
+    if(m!=0):
+        if(math.log(M,10)-math.log(m,10))>2.0:
+            plt.yscale('log')
     plt.ylabel(pstring, fontdict=font)
     plt.grid()
     plt.savefig("1D_plot.pdf")

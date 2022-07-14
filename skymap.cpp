@@ -31,8 +31,8 @@ int main(){
     //@return 0
     //TO DO: add more parameters choices
 	// Initialize the parameters
-    long double basetime = 15.0, g, ma, mai, omega, d, Deltaa;
-	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg;
+    long double basetime = 15.0, g, ma, mai, omega, d, Deltaa, ma_f, ga_f, omega_f;
+	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg, energymeasure_f, sampling_type, N1, count = 0;
 	unsigned int multi, cpucount;
 	float input;
     string filename;
@@ -119,7 +119,7 @@ int main(){
 		long double dl = (lf-li)/divmappa;		//<------- lattice step for latitude
 		long double db = (bf-bi)/divmappa;		//<------- lattice step for longitude
 		int divmappa1 = divmappa + 1;
-		int N1 = pow(divmappa1,2), count = 0;
+		int N1 = pow(divmappa1,2);
 		vector <long double> R(N1,0);			//<------- initialize the map of the values of the skymap
 		long double estimatime = (16.0/cpucount)*basetime*pow(divmappa/180.0,2)*N/200.0*(1.0+ma)*d/10.0;
 		if(estimatime<=1)
@@ -201,6 +201,17 @@ int main(){
 		Deltaa=-c*0.5*pow(10,-15)*pow(ma,2.0)/omega;
 		fscanf(file, "%d", &BCOMPARISON);
 		fscanf(file, "%d", &N_gauleg);
+		fscanf(file, "%f", &input);
+		ga_f = (long double) input;
+		ga_f *= pow(10,-11);
+		fscanf(file, "%f", &input);
+		ma_f = (long double) input;
+		fscanf(file, "%f", &input);
+		omega_f = (long double) input;
+		fscanf(file, "%d", &energymeasure_f);
+		omega_f*=pow(10,3*(energymeasure_f-2));
+		fscanf(file, "%d", &sampling_type);
+		fscanf(file, "%d", &N1);
 		fclose(file);
 		if(ABSIF){
 			if(gauleg(-1.0,1.0,N_gauleg))
@@ -223,12 +234,10 @@ int main(){
 			cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 		}
 		else{
-			int N1 = 1000;
 			vector <long double> xR(N1,0);
 			vector <long double> R(N1,0);
 			if(single_multi==2){
-				long double ma_i = 0;
-				long double ma_f = 10;
+				long double ma_i = ma;
                 if(multi){
                     #pragma omp parallel shared(cpucount)
                     {
@@ -245,14 +254,19 @@ int main(){
                 cpucount = multi;
 				// Calculation of the probability with respect to the mass
 				printProgress(0.0);
+				long double deltaa = -c*0.5*pow(10,-15)/omega;
 				#pragma omp parallel for num_threads(cpucount) schedule(dynamic)
-				for(int i = 0; i<N1; i++){
-					ma = ma_i + i*(ma_f-ma_i)/N1;
-					mai = ma + 1;
+				for(int i = 0; i<=N1; i++){
+					if(sampling_type==0)
+						ma = ma_i*pow(10,float(i)/float(N1) * log10(ma_f/ma_i));
+					else
+						ma = ma_i + float(i)/float(N1) * (ma_f-ma_i);
+					Deltaa=deltaa*pow(ma,2.0);
 					xR[i] = ma;
-					R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
-					if((i+1)%(N1/100)==0)
-						printProgress(float(i)/float(N1-1));
+					R[i] = Prob(lx, bx, d, g, omega, Deltaa, ma + 1, ABSIF);
+					count += 1;
+					if((count+1)%(N1/100)==0)
+						printProgress(float(count)/float(N1));
 				}
 				printProgress(1.0);
 				// End of the calculation of the probability with respect to the mass
@@ -262,7 +276,7 @@ int main(){
 				double x_component, probability;
 				int Digs = 16;
 				fprintf(file, "%d\n",  single_multi);
-				for(int i=0;i<N1;i++){
+				for(int i=0;i<=N1;i++){
 					x_component=double(xR[i]);
 					probability=double(R[i]);
 					fprintf(file,"%.*e    %.*e\n", Digs ,  x_component, Digs ,  probability);
@@ -274,8 +288,7 @@ int main(){
 				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 			}
 			else if(single_multi==3){
-				long double omegai = 1*pow(10,3*(energymeasure-2));
-				long double omegaf = 1000*pow(10,3*(energymeasure-2));
+				long double omega_i = omega;
                 if(multi){
                     #pragma omp parallel shared(cpucount)
                     {
@@ -292,13 +305,19 @@ int main(){
                 cpucount = multi;
 				// Calculation of the probability with respect to the energy
 				printProgress(0.0);
+				long double deltaa = -c*0.5*pow(10,-15)*pow(ma,2.0);
 				#pragma omp parallel for num_threads(cpucount) schedule(dynamic)
-				for(int i = 0; i<N1; i++){
-					omega = omegai + i*(omegaf-omegai)/N1;
+				for(int i = 0; i<=N1; i++){
+					if(sampling_type==0)
+						omega = omega_i*pow(10,float(i)/float(N1) * log10(omega_f/omega_i));
+					else
+						omega = omega_i + float(i)/float(N1) * (omega_f-omega_i);
+					Deltaa = deltaa/omega;
 					xR[i] = omega;
 					R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
-					if((i+1)%(N1/100)==0)
-						printProgress(float(i)/float(N1-1));
+					count += 1;
+					if((count+1)%(N1/100)==0)
+						printProgress(float(count)/float(N1));
 				}
 				printProgress(1.0);
 				// End of the calculation of the probability with respect to the energy
@@ -308,7 +327,7 @@ int main(){
 				double x_component, probability;
 				int Digs = 16;
 				fprintf(file, "%d     %d\n",  single_multi, energymeasure);
-				for(int i=0;i<N1;i++){
+				for(int i=0;i<=N1;i++){
 					x_component=double(xR[i]);
 					probability=double(R[i]);
 					fprintf(file,"%.*e    %.*e\n", Digs ,  x_component, Digs ,  probability);
@@ -320,8 +339,7 @@ int main(){
 				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
 			}
 			else if(single_multi==4){
-				long double gai = g/10.0;
-				long double gaf = g*10.0;
+				long double ga_i = g;
                 if(multi){
                     #pragma omp parallel shared(cpucount)
                     {
@@ -331,7 +349,7 @@ int main(){
                     cout<<"How many of them would you like to use?"<<endl;
                     cin >> multi;
                     while(multi<=0 || multi>cpucount){
-                        cout<<"Expected integer value between 1 and "<<cpucount<<'\n'<<"Please insert a reasonable value: "<<endl;
+                        cout << "Expected integer value between 1 and "<<cpucount<<'\n'<<"Please insert a reasonable value: "<<endl;
                         cin >> multi;
                     }
                 }
@@ -339,12 +357,16 @@ int main(){
 				// Calculation of the probability with respect to the g
 				printProgress(0.0);
                 #pragma omp parallel for num_threads(cpucount) schedule(dynamic)
-				for(int i = 0; i<N1; i++){
-					g = gai + i*(gaf-gai)/N1;
+				for(int i = 0; i<=N1; i++){
+					if(sampling_type==0)
+						g = ga_i*pow(10,float(i)/float(N1) * log10(ga_f/ga_i));
+					else
+						g = ga_i + float(i)/float(N1) * (ga_f-ga_i);
 					xR[i] = g;
 					R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
-					if((i+1)%(N1/100)==0)
-						printProgress(float(i)/float(N1-1));
+					count += 1;
+					if((count+1)%(N1/100)==0)
+						printProgress(float(count)/float(N1));
 				}
 				printProgress(1.0);
 				// End of the calculation of the probability with respect to the g
@@ -354,7 +376,7 @@ int main(){
 				double x_component, probability;
 				int Digs = 16;
 				fprintf(file, "%d     %d\n",  single_multi, energymeasure);
-				for(int i=0;i<N1;i++){
+				for(int i=0;i<=N1;i++){
 					x_component=double(xR[i]);
 					probability=double(R[i]);
 					fprintf(file,"%.*e    %.*e\n", Digs ,  x_component, Digs ,  probability);

@@ -136,7 +136,7 @@ bool gauleg(long double x1, long double x2, int N_GAULEG){
 //Function definitions of physical objects
 //Definitions for the absorption
 const int N_dngamma = 1000000;
-long double dngamma_dE_tab[N_dngamma][2],DeltaE_interpol, m_e = 0.511, sigma_0 = 1.3203125*pow(10.0,-74.0);
+long double dngamma_dE_tab[N_dngamma][2],DeltaE_interpol, m_e = 0.5109989, sigma_0 = 1.3203125*pow(10.0,-68.0);//10^-68 or 10^-74?
 void dngamma_dE_evaluator(){
     //! initialize the table of dngamma/dE
     //@param: none
@@ -168,6 +168,7 @@ long double dngamma_dE(long double e){
 void Gammaabs_value(long double omega, int N_GAULEG){
     //! calculate the value of Gammaabs
     //@param: omega (MeV), energy of the ALP
+	//@param: N_GAULEG, number of integration steps
     //@return: none
 	//TO DO: check the value of the result
 	long double diff1,somm1,diff2,somm2, xmax1, xmin1, xmax2, xmin2, res = 0.0, res_i = 0.0, eps_i, eps_j, beta_j, sigma_gg;
@@ -257,7 +258,7 @@ mat_complex Mk(long double z , vec_real kdir, long double g, long double omega, 
 	result[1][2] = Dag*cps;
 	result[2][0] = Dag*sps;
 	result[2][1] = Dag*cps;
-	result[2][2]= Deltaa;
+	result[2][2] = Deltaa;
 	return result;
 }
 
@@ -292,6 +293,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
 		Erho = ALPs_initial_conditions();
 		zi = distz;
 		dz0 = -distz/(div*i*mai);      //Average step for the Runge Kutta
+		//dz0 = -distz/(div*i*pow(mai,2.0));      //test it
 		dz = dz0;
 		Delta1 = pow(abs(dz0),errororder);    //Estimated desired error as a function of the order of the RK method and the base average step
 		Delta18 = Delta1/8.0;
@@ -421,6 +423,7 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 	long double div = N*distz;													//Number of average divisions desired as a function of the distance to be covered
 	long double p = 0.0;
 	int i = 1;
+	//while (((p>0.1 || p<pow(10,-6)) && i<=3)||((p>0.5 || p<pow(10,-9)) && i<=6 && i>3 )|| p<=0 || isnan(p)){
 	while ((p>0.1 && i<=3)||(p>0.5 && i<=6 && i>3 )|| p<=0 || isnan(p)){
 		if((file=fopen("1D_plot.txt","w+"))==NULL)
 			cout<<"Error opening the file"<<endl;
@@ -431,7 +434,7 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 		rho = ALPs_initial_conditions();
 		Erho = ALPs_initial_conditions();
 		zi = distz;
-		dz0 = -distz/(div*i*mai);      //Average step for the Runge Kutta
+		dz0 = -distz/(div*pow(i,2.0)*pow(mai,2.0));      //Average step for the Runge Kutta
 		dz = dz0;
 		Delta1 = pow(abs(dz0),errororder);    //Estimated desired error as a function of the order of the RK method and the base average step
 		Delta18 = Delta1/8.0;
