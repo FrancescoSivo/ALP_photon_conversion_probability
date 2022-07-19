@@ -32,7 +32,7 @@ int main(){
     //TO DO: add more parameters choices
 	// Initialize the parameters
     long double basetime = 15.0, g, ma, mai, omega, d, Deltaa, ma_f, ga_f, omega_f;
-	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg, energymeasure_f, sampling_type, N1, count = 0;
+	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg, energymeasure_f, sampling_type, N1, count = 0, plot_if;
 	unsigned int multi, cpucount;
 	float input;
     string filename;
@@ -84,6 +84,7 @@ int main(){
 		fscanf(file, "%d", &N_gauleg);
 		//scan from file the string filename
 		fscanf(file, "%s", filename.c_str());
+		fscanf(file, "%d", &plot_if);
 		fclose(file);
 		if(type == 11)
 			customBfielevaluator(filename);
@@ -155,7 +156,8 @@ int main(){
 			fprintf(file,"%.*e    %.*e    %.*e\n", Digs ,  double(R[i]), Digs , double(li + (i/divmappa1)*dl), Digs , double(bi + (i%divmappa1)*db));
 		}
 		fclose(file);
-		system("Mollweide_plot.exe");
+		if(plot_if)
+			system("Mollweide_plot.exe");
 	}
 	else{
 		fscanf(file, "%f", &input);
@@ -212,6 +214,7 @@ int main(){
 		omega_f*=pow(10,3*(energymeasure_f-2));
 		fscanf(file, "%d", &sampling_type);
 		fscanf(file, "%d", &N1);
+		fscanf(file, "%d", &plot_if);
 		fclose(file);
 		if(ABSIF){
 			if(gauleg(-1.0,1.0,N_gauleg))
@@ -230,8 +233,10 @@ int main(){
 			cout<<"Calculation completed!"<<endl;
 			cout<<"Producing the plot..."<<endl;
 			// End of the calculation of the probability one a single line
-			system("1D_plot.exe");
-			cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+			if(plot_if){
+				system("1D_plot.exe");
+				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+			}
 		}
 		else{
 			vector <long double> xR(N1,0);
@@ -284,8 +289,10 @@ int main(){
 				fclose(file);
 				cout<<"Calculation completed!"<<endl;
 				cout<<"Producing the plot..."<<endl;
-				system("1D_plot.exe");
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				if(plot_if){
+					system("1D_plot.exe");
+					cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				}
 			}
 			else if(single_multi==3){
 				long double omega_i = omega;
@@ -335,8 +342,10 @@ int main(){
 				fclose(file);
 				cout<<"Calculation completed!"<<endl;
 				cout<<"Producing the plot..."<<endl;
-				system("1D_plot.exe");
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				if(plot_if){
+					system("1D_plot.exe");
+					cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				}
 			}
 			else if(single_multi==4){
 				long double ga_i = g;
@@ -384,8 +393,10 @@ int main(){
 				fclose(file);
 				cout<<"Calculation completed!"<<endl;
 				cout<<"Producing the plot..."<<endl;
-				system("1D_plot.exe");
-				cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				if(plot_if){
+					system("1D_plot.exe");
+					cout<<"Your plot is saved in: 1D_plot.txt and in 1D_plot.pdf in this folder."<<endl;
+				}
 			}
 			else if(single_multi==5){
 				gauleg(-1.0,1.0,N_gauleg);

@@ -136,9 +136,9 @@ bool gauleg(long double x1, long double x2, int N_GAULEG){
 //Function definitions of physical objects
 //Definitions for the absorption
 const int N_dngamma = 1000000;
-long double dngamma_dE_tab[N_dngamma][2],DeltaE_interpol, m_e = 0.5109989, sigma_0 = 1.3203125*pow(10.0,-68.0);//10^-68 or 10^-74?
+long double dngamma_dE_tab[N_dngamma][2],DeltaE_interpol, m_e = 0.5109989, sigma_0 = 1.25*pow(10.0,-25.0);
 void dngamma_dE_evaluator(){
-    //! initialize the table of dngamma/dE
+    //! initialize the table of E*dngamma/dE
     //@param: none
     //@return: none    
 	FILE* file;
@@ -155,14 +155,14 @@ void dngamma_dE_evaluator(){
 	DeltaE_interpol = (dngamma_dE_tab[N_dngamma-1][0] - dngamma_dE_tab[0][0])/N_dngamma;
 }
 long double dngamma_dE(long double e){
-    //! calculate the value of dngamma/dE at energy e with a linear interpolation
+    //! calculate the value of dn_gamma/dE at energy e with a linear interpolation
     //@param: e (MeV), energy of the photon
     //@return: dngamma/dE
-	if(e < dngamma_dE_tab[0][0])
+	if(e < dngamma_dE_tab[0][0] || e > dngamma_dE_tab[N_dngamma-1][0])
 		return 0;
 	else{
 		int i = floor((e - dngamma_dE_tab[0][0])/DeltaE_interpol);
-		return dngamma_dE_tab[i][1] + (dngamma_dE_tab[i+1][1]-dngamma_dE_tab[i][1])/(DeltaE_interpol)*(e - dngamma_dE_tab[i][0]);
+		return (dngamma_dE_tab[i][1] + (dngamma_dE_tab[i+1][1]-dngamma_dE_tab[i][1])/(DeltaE_interpol)*(e - dngamma_dE_tab[i][0]))*pow(10.0,-6.0)/(pow(e,2.0));
 	}
 }
 void Gammaabs_value(long double omega, int N_GAULEG){
@@ -171,22 +171,22 @@ void Gammaabs_value(long double omega, int N_GAULEG){
 	//@param: N_GAULEG, number of integration steps
     //@return: none
 	//TO DO: check the value of the result
-	long double diff1,somm1,diff2,somm2, xmax1, xmin1, xmax2, xmin2, res = 0.0, res_i = 0.0, eps_i, eps_j, beta_j, sigma_gg;
+	long double diff1,somm1,diff2,somm2, xmax1, xmin1, xmax2, xmin2, res = 0.0, res_i = 0.0, eps_i, eps_j, beta_j, sigma_gg, m_e2 = m_e*m_e;
 	long double beta_j2;
-	xmin1 = pow(m_e,2.0)/omega;
+	xmin1 = m_e2/omega;
 	xmax1 = dngamma_dE_tab[N_dngamma - 1][0];
 	diff1 = (xmax1 - xmin1)/2.0;
 	somm1 = (xmax1 + xmin1)/2.0;
 	for(int i = 0; i < N_GAULEG; i++){
 		eps_i = diff1*XGAUSS[i] + somm1;
 		res_i = 0.0;
-		xmax2 = 1.0 - 2.0*pow(m_e,2.0)/(omega * eps_i);
+		xmax2 = 1.0 - 2.0*m_e2/(omega * eps_i);
 		xmin2 = -1.0;
 		diff2 = (xmax2 - xmin2)/2.0;
 		somm2 = (xmax2 + xmin2)/2.0;
 		for(int j = 0; j < N_GAULEG; j++){
 			eps_j = diff2*XGAUSS[j] + somm2;
-			beta_j = sqrt(1.0 - 2.0*pow(m_e,2.0)/(omega*eps_i*(1.0 - eps_j)));
+			beta_j = sqrt(1.0 - 2.0*m_e2/(omega*eps_i*(1.0 - eps_j)));
 			beta_j2 = pow(beta_j,2.0);
 			sigma_gg = sigma_0 * (1.0 - beta_j2)*(2.0 * beta_j*(beta_j2 - 2.0) + (3.0 - pow(beta_j,4.0))*log((1+beta_j)/(1-beta_j)));
 			res_i += sigma_gg*(1.0 - eps_j)/2.0*WGAUSS[j];
@@ -194,7 +194,7 @@ void Gammaabs_value(long double omega, int N_GAULEG){
 		res_i *= diff2;
 		res += res_i*dngamma_dE(eps_i)*WGAUSS[i];
 	}
-	Gammaabs = -res*diff1*0.5*I;
+	Gammaabs = -res*diff1*0.5*3.077*pow(10.0,21.0)*I;
 	//cout << "Gammaabs = " << Gammaabs << endl;
 }
 
@@ -204,9 +204,9 @@ mat_complex Mk(long double z , vec_real kdir, long double g, long double omega, 
     //@param: kdir (rad,rad,rad), the direction of the ALP
     //@param: g (GeV^-1), the coupling constant of the ALP with the photon
     //@param: omega (MeV), the energy of the photon
-    //@param: Deltaa (MeV^-1), the Delta_a related to the mass of the ALP
+    //@param: Deltaa (kpc^-1), the Delta_a related to the mass of the ALP
 	//@param: absif (bool), if true, the absorption is considered in the calculation
-    //@return: Mk
+    //@return: Mk (mat_complex), measured in kpc^-1
     long double xi = obs[0] + z*kdir[0];
 	long double yi = obs[1] + z*kdir[1];
 	long double zi = obs[2] + z*kdir[2];
