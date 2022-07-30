@@ -32,7 +32,7 @@ int main(){
     //TO DO: add more parameters choices
 	// Initialize the parameters
     long double basetime = 15.0, g, ma, mai, omega, d, Deltaa, ma_f, ga_f, omega_f;
-	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg, energymeasure_f, sampling_type, N1, count = 0, plot_if;
+	int divmappa, energymeasure, single_multi, maxprobscale, minprobscale, scalesetting, type, Bringmul, omegaif, N_gauleg, energymeasure_f, sampling_type, N1, count = 0, plot_if, adornot;
 	unsigned int multi, cpucount;
 	float input;
     string filename;
@@ -85,6 +85,7 @@ int main(){
 		//scan from file the string filename
 		fscanf(file, "%s", filename.c_str());
 		fscanf(file, "%d", &plot_if);
+		fscanf(file, "%d", &adornot);
 		fclose(file);
 		if(type == 11)
 			customBfielevaluator(filename);
@@ -133,7 +134,10 @@ int main(){
 		printProgress(0.0);
 		#pragma omp parallel for num_threads(cpucount) schedule(dynamic)
 		for(int i = 0; i<N1; i++){
-			R[i] = Prob(li + (i/divmappa1)*dl, bi + (i%divmappa1)*db, d, g, omega, Deltaa, mai, ABSIF);
+			if(adornot)
+				R[i] = Prob(li + (i/divmappa1)*dl, bi + (i%divmappa1)*db, d, g, omega, Deltaa, mai, ABSIF);
+			else
+				R[i] = Prob_nonadaptive(li + (i/divmappa1)*dl, bi + (i%divmappa1)*db, d, g, omega, Deltaa, mai, ABSIF);
 			count += 1;
 			if((count+1)%(N1/100)==0)
 				printProgress(float(i)/float(N1-1));
@@ -215,6 +219,7 @@ int main(){
 		fscanf(file, "%d", &sampling_type);
 		fscanf(file, "%d", &N1);
 		fscanf(file, "%d", &plot_if);
+		fscanf(file, "%d", &adornot);
 		fclose(file);
 		if(ABSIF){
 			if(gauleg(-1.0,1.0,N_gauleg))
@@ -229,7 +234,10 @@ int main(){
 		cout<<"Calculation in progress..." <<endl;
 		if(single_multi==1){
 			// Calculation of the probability one a single line
-			ProbSingleLine(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+			if(adornot)
+				ProbSingleLine(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+			else
+				ProbSingleLine_nonadaptive(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
 			cout<<"Calculation completed!"<<endl;
 			cout<<"Producing the plot..."<<endl;
 			// End of the calculation of the probability one a single line
@@ -268,7 +276,10 @@ int main(){
 						ma = ma_i + float(i)/float(N1) * (ma_f-ma_i);
 					Deltaa=deltaa*pow(ma,2.0);
 					xR[i] = ma;
-					R[i] = Prob(lx, bx, d, g, omega, Deltaa, ma + 1, ABSIF);
+					if(adornot)
+						R[i] = Prob(lx, bx, d, g, omega, Deltaa, ma + 1, ABSIF);
+					else
+						R[i] = Prob_nonadaptive(lx, bx, d, g, omega, Deltaa, ma + 1, ABSIF);
 					count += 1;
 					if((count+1)%(N1/100)==0)
 						printProgress(float(count)/float(N1));
@@ -321,7 +332,10 @@ int main(){
 						omega = omega_i + float(i)/float(N1) * (omega_f-omega_i);
 					Deltaa = deltaa/omega;
 					xR[i] = omega;
-					R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+					if(adornot)
+						R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+					else
+						R[i] = Prob_nonadaptive(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
 					count += 1;
 					if((count+1)%(N1/100)==0)
 						printProgress(float(count)/float(N1));
@@ -372,7 +386,10 @@ int main(){
 					else
 						g = ga_i + float(i)/float(N1) * (ga_f-ga_i);
 					xR[i] = g;
-					R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+					if(adornot)
+						R[i] = Prob(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
+					else
+						R[i] = Prob_nonadaptive(lx, bx, d, g, omega, Deltaa, mai, ABSIF);
 					count += 1;
 					if((count+1)%(N1/100)==0)
 						printProgress(float(count)/float(N1));

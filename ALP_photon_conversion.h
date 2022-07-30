@@ -330,6 +330,63 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
 	}
 	return p;
 }
+long double Prob_nonadaptive(long double ldir, long double bdir, long double distz, long double g, long double omega, long double Deltaa, long double mai, bool absif){
+	//! calculate the probability of the photon to be absorbed by the ALP
+	//@param: ldir (deg), the l direction of the ALP from the observer
+	//@param: bdir (deg), the b direction of the ALP from the observer
+	//@param: distz (kpc), the initial distance between ALP and the observer
+	//@param: g (GeV^-1), the coupling constant of the ALP with the photon
+	//@param: omega (MeV), the energy of the ALP
+	//@param: Deltaa (MeV^-1), the Delta_a related to the mass of the ALP
+	//@param: mai (neV), the mass of the ALP incremented by 1 neV
+	//@param: absif (bool), if true, the absorption is considered in the calculation
+	//@return: Prob
+	ldir*=conv;
+	bdir*=conv;
+	long double Delta0, zi, dz, Delta1, Delta18;
+	//I apply the initial conditions to the density matrix
+	mat_complex rho;
+	mat_complex Erho;
+	mat_complex rhoidzak;
+	mat_complex Mkzi;
+	mat_complex ak;
+	mat_complex k_RK[8];
+	long double cosbdir = cos(bdir);
+	vec_real kdir = {cos(ldir)*cosbdir , sin(ldir)*cosbdir , sin(bdir)};		//Direction vector definition
+	long double div = N*distz;													//Number of average divisions desired as a function of the distance to be covered
+	long double p = 0.0;
+	int i = 1;
+	rho = ALPs_initial_conditions();
+	Erho = ALPs_initial_conditions();
+	zi = distz;
+	dz = -distz/div;      //Average step for the Runge Kutta
+	while (zi>0){				//I solve the Von Neuman commutator equation with Runge-Kutta method of order: order
+		//initialize all k_RK with init_mat_complex
+		k_RK[0] = init_mat_complex(3,3);
+		for (int j=1; j<order; j++){
+			k_RK[j] = k_RK[0];
+		}
+		for(int j=0; j<order;j++){
+			Mkzi = Mk(zi + CC_RK8[j]*dz, kdir, g, omega, Deltaa, absif);
+			ak = init_mat_complex(3,3);
+			for(int k = 0; k < j; k++){
+					ak = sum_mat(ak , mult_mat_scalar(k_RK[k],AA_RK8[j][k]));
+			}
+			rhoidzak = sum_mat(rho,mult_mat_scalar(ak,dz));
+			k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);
+			}
+		for(int j=0; j<order; j++){
+			rho = sum_mat(rho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
+			Erho = sum_mat(Erho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
+		}
+		rho = ALPs_density_matrix_condition(rho);
+		Erho = ALPs_density_matrix_condition(Erho);
+		Delta0 = fmax(max_value(matrix_abs(sub_mat(rho,Erho))),0.0);
+		zi+=dz;
+	}
+	p = 1.0 - rho[2][2].real();
+	return p;
+}
 
 long double Non_pert_Prob(long double ldir, long double bdir, long double distz, long double g, long double omega, long double ma, int N_GAULEG){
 	//! calculate the probability ALP photon conversion with a non-perturbative calculation
@@ -480,6 +537,82 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 		i+=1;
 		fclose(file);
 	}
+	return p;
+}
+long double ProbSingleLine_nonadaptive(long double ldir, long double bdir, long double distz, long double g, long double omega, long double Deltaa, long double mai, bool absif){
+	//! calculate the probability of the photon to be absorbed by the ALP
+	//@param: ldir (deg), the l direction of the ALP from the observer
+	//@param: bdir (deg), the b direction of the ALP from the observer
+	//@param: distz (kpc), the initial distance between ALP and the observer
+	//@param: g (GeV^-1), the coupling constant of the ALP with the photon
+	//@param: omega (MeV), the energy of the ALP
+	//@param: Deltaa (MeV^-1), the Delta_a related to the mass of the ALP
+	//@param: mai (neV), the mass of the ALP incremented by 1 neV
+	//@param: absif (bool), if true, the photon is absorbed by the ALP
+	//@return: Prob
+	ldir*=conv;
+	bdir*=conv;
+	FILE* file;
+	long double Delta0, zi, dz0, dz, Delta1, Delta18;
+	//I apply the initial conditions to the density matrix
+	mat_complex rho;
+	mat_complex Erho;
+	mat_complex rhoidzak;
+	mat_complex Mkzi;
+	mat_complex ak;
+	mat_complex k_RK[8];
+	double scrz, scrp;
+	int Digs = 16;
+	long double cosbdir = cos(bdir);
+	vec_real kdir = {cos(ldir)*cosbdir , sin(ldir)*cosbdir , sin(bdir)};		//Direction vector definition
+	long double div = N*distz;													//Number of average divisions desired as a function of the distance to be covered
+	long double p = 0.0;
+	if((file=fopen("1D_plot.txt","w+"))==NULL)
+		cout<<"Error opening the file"<<endl;
+	if(BCOMPARISON==0)
+		fprintf(file, "1\n");
+	else
+		fprintf(file, "1    %d\n", BCOMPARISON);
+	rho = ALPs_initial_conditions();
+	Erho = ALPs_initial_conditions();
+	zi = distz;
+	dz = -distz/div;      //Average step for the Runge Kutta
+	while (zi>0){				//I solve the Von Neuman commutator equation with Runge-Kutta method
+		//initialize all k_RK with init_mat_complex
+		k_RK[0] = init_mat_complex(3,3);
+		for (int j=1; j<order; j++){
+			k_RK[j] = k_RK[0];
+		}
+		for(int j=0; j<order;j++){
+			Mkzi = Mk(zi + CC_RK8[j]*dz, kdir, g, omega, Deltaa, absif);
+			ak = init_mat_complex(3,3);
+			for(int k = 0; k < j; k++){
+					ak = sum_mat(ak , mult_mat_scalar(k_RK[k],AA_RK8[j][k]));
+			}
+			rhoidzak = sum_mat(rho,mult_mat_scalar(ak,dz));
+			k_RK[j] = mult_mat_scalar(commutator(Mkzi,rhoidzak),-I*dz);
+			}
+		for(int j=0; j<order; j++){
+			rho = sum_mat(rho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
+			Erho = sum_mat(Erho,mult_mat_scalar(k_RK[j],BB_RK8[j]));
+		}
+		rho = ALPs_density_matrix_condition(rho);
+		Erho = ALPs_density_matrix_condition(Erho);
+		Delta0 = fmax(max_value(matrix_abs(sub_mat(rho,Erho))),0.0);
+		scrz = double(zi);
+		p = 1.0 - rho[2][2].real();
+		if(p>0)
+			scrp=double(p);
+		else
+			scrp=0.0;
+		if(BCOMPARISON==0)
+			fprintf(file,"%.*e   %.*e\n", Digs ,  scrz, Digs ,  scrp);
+		else
+			fprintf(file,"%.*e   %.*e   %.*e\n", Digs ,  scrz, Digs ,  scrp, Digs , double(BPRINT));
+		zi+=dz;
+	}
+	p = 1.0 - rho[2][2].real();
+	fclose(file);
 	return p;
 }
 #endif //ALP_PHOTON_CONVERSION_H
