@@ -292,7 +292,7 @@ long double Prob(long double ldir, long double bdir, long double distz, long dou
 		rho = ALPs_initial_conditions();
 		Erho = ALPs_initial_conditions();
 		zi = distz;
-		dz0 = -distz/(div*i*mai);      //Average step for the Runge Kutta
+		dz0 = -distz/(div*i);      //Average step for the Runge Kutta
 		//dz0 = -distz/(div*i*pow(mai,2.0));      //test it
 		dz = dz0;
 		Delta1 = pow(abs(dz0),errororder);    //Estimated desired error as a function of the order of the RK method and the base average step
@@ -480,7 +480,6 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 	long double div = N*distz;													//Number of average divisions desired as a function of the distance to be covered
 	long double p = 0.0;
 	int i = 1;
-	//while (((p>0.1 || p<pow(10,-6)) && i<=3)||((p>0.5 || p<pow(10,-9)) && i<=6 && i>3 )|| p<=0 || isnan(p)){
 	while ((p>0.1 && i<=3)||(p>0.5 && i<=6 && i>3 )|| p<=0 || isnan(p)){
 		if((file=fopen("1D_plot.txt","w+"))==NULL)
 			cout<<"Error opening the file"<<endl;
@@ -491,7 +490,7 @@ long double ProbSingleLine(long double ldir, long double bdir, long double distz
 		rho = ALPs_initial_conditions();
 		Erho = ALPs_initial_conditions();
 		zi = distz;
-		dz0 = -distz/(div*pow(i,2.0)*pow(mai,2.0));      //Average step for the Runge Kutta
+		dz0 = -distz/(div*pow(i,2.0));      //Average step for the Runge Kutta
 		dz = dz0;
 		Delta1 = pow(abs(dz0),errororder);    //Estimated desired error as a function of the order of the RK method and the base average step
 		Delta18 = Delta1/8.0;
